@@ -1,9 +1,8 @@
 using RailStationDemoApp.Models;
+using RailStationDemoApp.Services;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace RailStationDemoApp.Controls;
 /// <summary>
@@ -37,7 +36,9 @@ namespace RailStationDemoApp.Controls;
 /// </summary>
 public class StationControl : Control
 {
-    public static Canvas? StationView;
+    protected Canvas? StationView { get; private set; }
+
+    protected readonly DrawService DrawService = new(1100, 750);
     
     private static readonly DependencyProperty RailroadsProperty = DependencyProperty.Register(
                                                                 "Railroads", typeof(List<RailSegment>),
@@ -72,20 +73,12 @@ public class StationControl : Control
     }
 
     public void HandleRailroadsChanged() {
-        if (Railroads != null & StationView != null) {
+        if (StationView != null) {
             StationView.Children.Clear();
 
-            var drawingVisual = new DrawingVisual();
-
-            using (var drawingContext = drawingVisual.RenderOpen()) {
-                Railroads.ForEach(segment => drawingContext.DrawLine(new Pen(Brushes.Black, 1), new Point { X = segment.StartPoint.X, Y = segment.StartPoint.Y }, new Point { X = segment.EndPoint.X, Y = segment.EndPoint.Y }));
-            }
+            var drawedRailroads = DrawService.GetDrawedRailroads(Railroads);
             
-            var bitmap = new RenderTargetBitmap(1095, 745, 96, 96, PixelFormats.Default);
-
-            bitmap.Render(drawingVisual);
-            
-            StationView.Children.Add(new Image { Source = bitmap });
+            StationView.Children.Add(drawedRailroads);
         }
     }
 }

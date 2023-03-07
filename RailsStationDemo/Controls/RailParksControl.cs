@@ -2,8 +2,6 @@ using RailStationDemoApp.Models;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace RailStationDemoApp.Controls;
 
@@ -37,15 +35,10 @@ namespace RailStationDemoApp.Controls;
 ///
 /// </summary>
 
-//TODO: Needs to resolve a problem with Canvas container
 public class RailParksControl : StationControl
 {
-    private Dictionary<string, Color> highlightColors = new() {
-                                                            { "Green", Colors.Green },
-                                                            { "Blue", Colors.Blue },
-                                                            { "Yellow", Colors.Yellow }
-                                                        };
-    public Image HighLightLayer;
+    
+    private Image highLightLayer;
 
     static RailParksControl()
     {
@@ -74,36 +67,13 @@ public class RailParksControl : StationControl
 
     public void HandleHighLightAreaChanged() {
         if (HighLightArea != null & HighLightColor != null) {
-            if (HighLightLayer != null) {
-                StationView.Children.Remove(HighLightLayer);
-            }
-            var drawingVisual = new DrawingVisual();
-
-            using (var drawingContext = drawingVisual.RenderOpen()) {
-                var figure = new PathFigure {
-                    IsClosed = true,
-                    IsFilled = true
-                };
-
-                HighLightArea.ForEach(point => figure.Segments.Add(new LineSegment { Point = new Point { X = point.X, Y = point.Y } }));
-
-                figure.Freeze();
-
-                var geometry = new PathGeometry();
-
-                geometry.Figures.Add(figure);
-                geometry.Freeze();
-
-                drawingContext.DrawGeometry(new SolidColorBrush { Color = highlightColors[HighLightColor], Opacity = 0.3 }, null, geometry);
+            if (highLightLayer != null) {
+                StationView.Children.Remove(highLightLayer);
             }
 
-            var bitmap = new RenderTargetBitmap(1095, 745, 96, 96, PixelFormats.Default);
+            highLightLayer = DrawService.GetDrawedHighLightArea(HighLightArea, HighLightColor);
 
-            bitmap.Render(drawingVisual);
-
-            HighLightLayer = new Image { Source = bitmap };
-
-            StationView.Children.Add(HighLightLayer);
+            StationView.Children.Add(highLightLayer);
         }
     }
 

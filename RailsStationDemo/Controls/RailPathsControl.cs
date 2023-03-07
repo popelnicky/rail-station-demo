@@ -35,10 +35,9 @@ namespace RailStationDemoApp.Controls;
 ///
 /// </summary>
 
-//TODO: Needs to resolve a problem with Canvas container
 public class RailPathsControl : StationControl
 {
-    public Image RailPathsLayer;
+    private Image railPathsLayer;
 
     static RailPathsControl()
     {

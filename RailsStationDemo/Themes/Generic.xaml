@@ -10,7 +10,6 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <Canvas x:Name="StationView" Margin="0"></Canvas>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -24,7 +23,10 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <local:StationControl x:Name="ParksView" Railroads="{Binding Railroads}"></local:StationControl>
+                        <StackPanel>
+                            <local:StationControl x:Name="ParksView" Railroads="{Binding Railroads}"></local:StationControl>
+                            <Canvas x:Name="StationView" Margin="0"></Canvas>
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -38,7 +40,10 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <local:StationControl x:Name="PathsView" Railroads="{Binding Railroads}"></local:StationControl>
+                        <StackPanel>
+                            <local:StationControl x:Name="PathsView" Railroads="{Binding Railroads}"></local:StationControl>
+                            <Canvas x:Name="StationView" Margin="0"></Canvas>
+                        </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
