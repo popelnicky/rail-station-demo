@@ -10,6 +10,7 @@ public class RailStation
 
     private readonly int yOffset = 350;
     private RailPoint[] allRailPoints;
+    private Dictionary<string, List<RailPoint>> railMap;
 
     public List<RailPark> RailParks { get; private set; }
 
@@ -18,10 +19,14 @@ public class RailStation
     public List<RailPoint> AllRailPoints { get; private set; }
 
     public RailStation() {
+        railMap = new Dictionary<string, RailPoint>();
+
         GenerateStation();
 
         AllRailSegmets = GetAllRailSegments();
         AllRailPoints = allRailPoints.ToList();
+
+        BuildRailMap();
     }
 
     public List<string> GetRailPointsCollection() {
@@ -35,6 +40,17 @@ public class RailStation
         }
 
         return result;
+    }
+
+    private void BuildRailMap() {
+        foreach(var railPoint in AllRailPoints) {
+            railMap[railPoint.Id] = new List<RailPoint>();
+            
+            var railSegments = AllRailSegmets
+                    .Where(railSegment => railSegment.StartPoint == railPoint || railSegment.EndPoint == railPoint).ToList()
+                    .Select<List<RailPoint>>(railSegment => railSegment.StartPoint != railPoint ? railSegment.StartPoint : railSegment.EndPoint)
+                    .ToList();
+        }
     }
 
     private void GenerateStation() {
