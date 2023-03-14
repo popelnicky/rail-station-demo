@@ -51,7 +51,7 @@ public class DrawService
     public Image GetDrawedHighLightArea(List<RailPoint> highLightPolygon, string highlightColor) {
         var result = new Image();
 
-        if (highLightPolygon == null || highLightPolygon.Count == 0) {
+        if (highLightPolygon == null || highLightPolygon.Count == 0 || string.IsNullOrEmpty(highlightColor)) {
             return result;
         }
 
@@ -75,7 +75,7 @@ public class DrawService
             drawingContext.DrawGeometry(new SolidColorBrush { Color = highlightColors[highlightColor], Opacity = 0.3 }, null, geometry);
         }
 
-        var bitmap = new RenderTargetBitmap(1100, 750, 96, 96, PixelFormats.Default);
+        var bitmap = new RenderTargetBitmap(ImageWidth, ImageHeight, 96, 96, PixelFormats.Default);
 
         bitmap.Render(drawingVisual);
 

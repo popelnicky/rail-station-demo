@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace RailStationDemoApp.Models;
@@ -31,6 +32,17 @@ public class RailStation
     }
 
     public List<RailSegment> BuildRailPath(string fromId, string toId) {
+        var empty = new List<RailSegment>();
+
+        if (string.IsNullOrEmpty(fromId) || string.IsNullOrEmpty(toId)) {
+            return empty;
+        }
+
+        if (allRailPoints.FirstOrDefault(point => point.Id == fromId) == null || 
+            allRailPoints.FirstOrDefault(point => point.Id == toId) == null) {
+            return empty;
+        }
+        
         var key = $"{ fromId }->{ toId }";
 
         if (railPaths.ContainsKey(key)) {
@@ -58,7 +70,7 @@ public class RailStation
         var minPathDistance = possiblePaths.Min(path => path.Sum(segment => segment.Distance));
         var path = possiblePaths.First(path => path.Sum(segment => segment.Distance) <= minPathDistance);
 
-        railPaths[key] = path ?? new List<RailSegment>();
+        railPaths[key] = path ?? empty;
 
         return railPaths[key];
     }
