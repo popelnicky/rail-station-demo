@@ -63,6 +63,12 @@ public class RailPathsControl : StationControl
     }
 
     public void HandleRailPathChanged() {
-        
+        if (railPathsLayer != null) {
+            StationView.Children.Remove(railPathsLayer);
+        }
+
+        railPathsLayer = DrawService.GetDrawedRailPath(RailPath);
+
+        StationView.Children.Add(railPathsLayer);
     }
 }

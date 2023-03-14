@@ -26,7 +26,7 @@ public class DrawService
         ImageHeight = pictureHeight;
     }
 
-    public Image GetDrawedRailroads(List<RailSegment> railroads) {
+    public Image GetDrawedRailroads(List<RailSegment> railroads, SolidColorBrush brush = null, int stroke = 1) {
         var result = new Image();
 
         if (railroads == null || railroads.Count == 0) {
@@ -36,7 +36,7 @@ public class DrawService
         var drawingVisual = new DrawingVisual();
 
         using (var drawingContext = drawingVisual.RenderOpen()) {
-            railroads.ForEach(segment => drawingContext.DrawLine(new Pen(Brushes.Black, 1), new Point { X = segment.StartPoint.X, Y = segment.StartPoint.Y }, new Point { X = segment.EndPoint.X, Y = segment.EndPoint.Y }));
+            railroads.ForEach(segment => drawingContext.DrawLine(new Pen(brush ?? Brushes.Black, stroke), new Point { X = segment.StartPoint.X, Y = segment.StartPoint.Y }, new Point { X = segment.EndPoint.X, Y = segment.EndPoint.Y }));
         }
 
         var bitmap = new RenderTargetBitmap(ImageWidth, ImageHeight, 96, 96, PixelFormats.Default);
@@ -82,5 +82,9 @@ public class DrawService
         result.Source = bitmap;
 
         return result;
+    }
+
+    public Image GetDrawedRailPath(List<RailSegment> railPath) {
+        return GetDrawedRailroads(railPath, Brushes.Red, 5);
     }
 }

@@ -14,6 +14,6 @@ public class RailSegment
         StartPoint = startPoint;
         EndPoint = endPoint;
         
-        Distance = Math.Abs(endPoint.X - startPoint.X);
+        Distance = (int) Math.Sqrt((endPoint.X - startPoint.X) * (endPoint.X - startPoint.X) + (endPoint.Y - startPoint.Y) * (endPoint.Y - startPoint.Y));
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace RailStationDemoApp.Models;
@@ -11,6 +10,7 @@ public class RailStation
     private readonly int yOffset = 350;
     private RailPoint[] allRailPoints;
     private Dictionary<string, List<RailPoint>> railMap;
+    private Dictionary<string, List<RailSegment>> railPaths;
 
     public List<RailPark> RailParks { get; private set; }
 
@@ -19,7 +19,8 @@ public class RailStation
     public List<RailPoint> AllRailPoints { get; private set; }
 
     public RailStation() {
-        railMap = new Dictionary<string, RailPoint>();
+        railMap = new Dictionary<string, List<RailPoint>>();
+        railPaths = new Dictionary<string, List<RailSegment>>();
 
         GenerateStation();
 
@@ -29,11 +30,44 @@ public class RailStation
         BuildRailMap();
     }
 
+    public List<RailSegment> BuildRailPath(string fromId, string toId) {
+        var key = $"{ fromId }->{ toId }";
+
+        if (railPaths.ContainsKey(key)) {
+            return railPaths[key];
+        }
+        
+        var possibleSequences = new List<List<RailPoint>>();
+        var possiblePaths = new List<List<RailSegment>>();
+        var from = allRailPoints.First(railPoint => railPoint.Id == fromId);
+        var to = allRailPoints.First(railPoint => railPoint.Id == toId);
+        var sequence = new List<RailPoint>() { from };
+
+        FindAllRailPaths(from, to, possibleSequences, sequence);
+
+        foreach (var points in possibleSequences) {
+            var possiblePath = new List<RailSegment>();
+
+            possiblePaths.Add(possiblePath);
+
+            for (var i = 0; i < points.Count - 1; i++) {
+                possiblePath.Add(GetNewRailSegment(points[i], points[i + 1]));
+            }
+        }
+
+        var minPathDistance = possiblePaths.Min(path => path.Sum(segment => segment.Distance));
+        var path = possiblePaths.First(path => path.Sum(segment => segment.Distance) <= minPathDistance);
+
+        railPaths[key] = path ?? new List<RailSegment>();
+
+        return railPaths[key];
+    }
+
     public List<string> GetRailPointsCollection() {
         var result = new List<string>();
         var random = new Random();
 
-        for (var i = 0; i < 8; i++) {
+        for (var i = 0; i < 3; i++) {
             var index = random.Next(AllRailPoints.Count());
 
             result.Add(AllRailPoints[index].Id);
@@ -44,12 +78,10 @@ public class RailStation
 
     private void BuildRailMap() {
         foreach(var railPoint in AllRailPoints) {
-            railMap[railPoint.Id] = new List<RailPoint>();
-            
-            var railSegments = AllRailSegmets
-                    .Where(railSegment => railSegment.StartPoint == railPoint || railSegment.EndPoint == railPoint).ToList()
-                    .Select<List<RailPoint>>(railSegment => railSegment.StartPoint != railPoint ? railSegment.StartPoint : railSegment.EndPoint)
-                    .ToList();
+            railMap[railPoint.Id] = AllRailSegmets
+                .Where(railSegment => railSegment.StartPoint == railPoint || railSegment.EndPoint == railPoint)
+                .Select(railSegment => railSegment.StartPoint.Id != railPoint.Id ? railSegment.StartPoint : railSegment.EndPoint)
+                .ToList();
         }
     }
 
@@ -188,5 +220,21 @@ public class RailStation
 
     private RailSegment GetNewRailSegment(RailPoint startPoint, RailPoint endPoint) {
         return new RailSegment(startPoint, endPoint);
+    }
+
+    private void FindAllRailPaths(RailPoint from, RailPoint to, List<List<RailPoint>> possiblePaths, List<RailPoint> sequence) {
+        if (from.Id == to.Id) {
+            possiblePaths.Add(sequence);
+
+            return;
+        }
+
+        foreach (var next in railMap[from.Id]) {
+            if (sequence.Contains(next)) {
+                continue;
+            }
+
+            FindAllRailPaths(next, to, possiblePaths, new List<RailPoint>(sequence) { next });
+        }
     }
 }

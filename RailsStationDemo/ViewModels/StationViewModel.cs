@@ -123,7 +123,7 @@ public class StationViewModel : INotifyPropertyChanged
 
             OnPropertyChanged(nameof(FromRailPoint));
 
-            
+            TryToBuildRailPath();
         }
     }
 
@@ -134,6 +134,7 @@ public class StationViewModel : INotifyPropertyChanged
 
             OnPropertyChanged(nameof(ToRailPoint));
 
+            TryToBuildRailPath();
         }
     }
 
@@ -158,16 +159,11 @@ public class StationViewModel : INotifyPropertyChanged
         RailParkArea = railPark.Area;
     }
 
-    //TODO: Nice to have resolving this problem using Graphs. Then Needs to rebuild main model
-    //private void TryToBuildRailPath() {
-    //    if (string.IsNullOrEmpty(FromRailPoint) || string.IsNullOrEmpty(ToRailPoint)) {
-    //        return;
-    //    }
+    private void TryToBuildRailPath() {
+        if (string.IsNullOrEmpty(FromRailPoint) || string.IsNullOrEmpty(ToRailPoint)) {
+            return;
+        }
 
-
-    //}
-
-    private void SetRailPath() {
-        
+        RailPath = railStation.BuildRailPath(FromRailPoint, ToRailPoint);
     }
 }
